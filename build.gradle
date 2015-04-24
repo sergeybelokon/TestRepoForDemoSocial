@@ -1,0 +1,89 @@
+version = '1.0.44'
+
+def BUILD_NUMBER = project.hasProperty('BUILD_NUMBER') ? "$BUILD_NUMBER" : "1"
+def JDBC_URL = project.hasProperty('JDBC_URL') ? "$JDBC_URL" : ""
+def JDBC_USERNAME = project.hasProperty('JDBC_USERNAME') ? "$JDBC_USERNAME" : ""
+def JDBC_PASSWORD = project.hasProperty('JDBC_PASSWORD') ? "$JDBC_PASSWORD" : ""
+def EXCLUDE_TESTS = project.hasProperty('EXCLUDE_TESTS') ? "$EXCLUDE_TESTS" : ""
+def CUCUMBERS_TEST_RUN = project.hasProperty('CUCUMBERS_TEST_RUN') ? "$CUCUMBERS_TEST_RUN" : ""
+def CUCUMBERS_TEST_PROFILE = project.hasProperty('CUCUMBERS_TEST_PROFILE') ? "$CUCUMBERS_TEST_PROFILE" : "default"
+
+apply from: "${rootProject.projectDir}/buildScripts/maven.gradle"
+
+allprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply from: "${rootProject.projectDir}/buildScripts/dependencies.gradle"
+    sourceCompatibility = '1.7'
+    group = 'com.kenshoo.urlbuilder'
+}
+
+apply plugin: 'liquibase'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.saliman:gradle-liquibase-plugin:1.0.0'
+        classpath 'mysql:mysql-connector-java:5.1.18'
+    }
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile 'application/src/main/resources/dbchangelog/dbchangelog.xml'
+            url "$JDBC_URL"
+            username "$JDBC_USERNAME"
+            password "$JDBC_PASSWORD"
+        }
+    }
+}
+
+subprojects{
+    test{
+        exclude "$EXCLUDE_TESTS"
+        task cucumberTest(type: Test, description: 'Runs all specified cucumbers') {
+            jvmArgs '-Xmx2048m', '-Xms512m', '-XX:MaxPermSize=1024m'
+            //reports.junitXml.enabled = false
+            //reports.html.enabled = false
+            include "$CUCUMBERS_TEST_RUN"
+            systemProperty "spring.profiles.active", "$CUCUMBERS_TEST_PROFILE"
+        }
+    }
+}
+
+task deleteReleaseFiles(type: Delete) {
+    delete fileTree(dir: "release")
+}
+
+task assembleDbUpdateZip(type: Zip, dependsOn: 'deleteReleaseFiles') {
+    from "${rootProject.projectDir}/application/src/main/resources/dbchangelog"
+    archiveName "urlbuilder-db-update-${project.version}_${BUILD_NUMBER}.zip"
+    destinationDir file("${rootProject.projectDir}/release")
+}
+
+task releaseBuild(type: Copy, dependsOn: 'assembleDbUpdateZip') {
+    from "${rootProject.projectDir}/appservice/build/libs/urlbuilder-web.war"
+    rename "urlbuilder-web.war", "urlbuilder-web-${project.version}_${BUILD_NUMBER}.war"
+
+    from "${rootProject.projectDir}/urlbuilder-dto/build/libs/"
+    rename "urlbuilder-dto-.*.jar", "urlbuilder-dto-${project.version}_${BUILD_NUMBER}.jar"
+
+    into "${rootProject.projectDir}/release"
+}
+
+task generateBuildProperties() {
+    Properties properties = new Properties()
+    properties.put("build.version", project.version)
+    properties.put("build.date", getDate())
+    properties.put("build.number", "${BUILD_NUMBER}".toString())
+    properties.store(new FileOutputStream("${rootProject.projectDir}/appservice/src/main/resources/config/properties/build.properties"), "Build properties")
+}
+
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('dd.MM.yyyy')
+    return formattedDate
+}
