@@ -4,7 +4,7 @@ def BUILD_NUMBER = project.hasProperty('BUILD_NUMBER') ? "$BUILD_NUMBER" : "1"
 def JDBC_URL = project.hasProperty('JDBC_URL') ? "$JDBC_URL" : ""
 def JDBC_USERNAME = project.hasProperty('JDBC_USERNAME') ? "$JDBC_USERNAME" : ""
 def JDBC_PASSWORD = project.hasProperty('JDBC_PASSWORD') ? "$JDBC_PASSWORD" : ""
-def EXCLUDE_TESTssdsdfS = proje     ct.hasProperty('EXCLUDE_TESTS') ? "$EXCLUDE_TESTS" : ""
+def EXCLUDE_TESTssdsdf     S = proje     ct.hasProperty('EXCLUDE_TESTS') ? "$EXCLUDE_TESTS" : ""
 def CUCUMBERS_TEST_RUN = project.hasProperty('CUCUMBERS_TEST_RUN') ? "$CUCUMBERS_TEST_RUN" : ""
 def CUCUMBERS_TEST_PROFILE = project.hasProperty('CUCUMBERS_TEST_PROFILE') ? "$CUCUMBERS_TEST_PROFILE" : "default"
 
