@@ -10,7 +10,7 @@ def CUCUMBERS_TEST_PROFILE = project.hasProperty('CUCUMBERS_TEST_PROFILE') ? "$C
 
 apply from: "${rootProject.projectDir}/buildScripts/maven.gradle"
 
-allprojects {
+allprojects {asdad
     apply plugin: 'idea'
     apply plugin: 'java'
     apply from: "${rootProject.projectDir}/buildScripts/dependencies.gradle"
