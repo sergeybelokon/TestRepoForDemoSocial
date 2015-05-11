@@ -27,7 +27,7 @@ buildscript {
     dependencies {
         classpath 'net.saliman:gradle-liquibase-plugin:1.0.0'
         classpath 'mysql:mysql-connector-java:5.1.18'
-    }
+    } 
 }
 
 liquibase {
