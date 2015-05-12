@@ -9,10 +9,14 @@ public class SomeClass {
     public void setSomeId(int someId) {
         this.someId = someId;
     }
-
+xchxc
     public int getSomeNumber() {
         return someNumber;
     }
+]]
+
+
+
 
     public void setSomeNumber(int someNumber) {
         this.someNumber = someNumber;
