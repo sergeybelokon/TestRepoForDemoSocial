@@ -20,7 +20,7 @@ allprojects {
 
 apply plugin: 'liquibase'
 
-buildscript {
+buildscript {asdd
     repositories {
         mavenCentral()
     }
@@ -56,7 +56,7 @@ subprojects{
 
 task deleteReleaseFiles(type: Delete) {
     delete fileTree(dir: "release")
-}
+}tyrueiw
 
 task assembleDbUpdateZip(type: Zip, dependsOn: 'deleteReleaseFiles') {
     from "${rootProject.projectDir}/application/src/main/resources/dbchangelog"
